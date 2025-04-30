@@ -1,15 +1,16 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>数値選択ポップオーバー</title>
+  <meta charset="UTF-8">
+  <title>ドーナツ数値セレクター</title>
   <style>
     body {
+      margin: 0;
+      background: #f5f5f5;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
-      background: #f0f0f0;
     }
 
     .selector {
@@ -26,17 +27,19 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: white;
       border: 2px solid #888;
+      background: white;
       font-size: 24px;
-      cursor: pointer;
       z-index: 2;
+      cursor: pointer;
     }
 
     .donut {
       position: absolute;
       width: 100%;
       height: 100%;
+      top: 0;
+      left: 0;
       border-radius: 50%;
       display: none;
       z-index: 1;
@@ -47,7 +50,7 @@
       display: block;
     }
 
-    /* 薄いドーナツ背景（円環） */
+    /* ドーナツの背景円環 */
     .donut::before {
       content: '';
       position: absolute;
@@ -58,21 +61,30 @@
       transform: translate(-50%, -50%);
       border-radius: 50%;
       border: 20px solid rgba(200, 200, 200, 0.2);
-      box-sizing: border-box;
     }
 
-    .donut .slice {
+    .slice {
       position: absolute;
-      font-size: 16px;
-      font-weight: bold;
+      top: 50%;
+      left: 50%;
+      width: 120px;
+      height: 120px;
+      transform-origin: 0 60px;
       cursor: pointer;
-      transform: translate(-50%, -50%);
     }
 
-    .donut .sector-line {
+    .slice-text {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .sector-line {
       position: absolute;
       width: 2px;
-      height: 150px;
+      height: 110px;
       background: #ccc;
       top: 50%;
       left: 50%;
@@ -80,11 +92,11 @@
     }
 
     @keyframes popIn {
-      0% {
+      from {
         opacity: 0;
         transform: scale(0.8);
       }
-      100% {
+      to {
         opacity: 1;
         transform: scale(1);
       }
@@ -92,47 +104,47 @@
   </style>
 </head>
 <body>
+  <div class="selector">
+    <button class="center-button">0</button>
+    <div class="donut" id="donut"></div>
+  </div>
 
-<div class="selector">
-  <button class="center-button">0</button>
-  <div class="donut" id="donut"></div>
-</div>
+  <script>
+    const centerBtn = document.querySelector('.center-button');
+    const donut = document.getElementById('donut');
 
-<script>
-  const centerBtn = document.querySelector('.center-button');
-  const donut = document.getElementById('donut');
+    for (let i = 0; i < 12; i++) {
+      const angle = i * 30;
+      const rad = angle * Math.PI / 180;
 
-  // 数字の配置
-  for (let i = 1; i <= 12; i++) {
-    const angle = (i - 3) * 30;
-    const rad = angle * Math.PI / 180;
-    const x = 120 * Math.cos(rad) + 150;
-    const y = 120 * Math.sin(rad) + 150;
+      // 各 slice（扇形クリックエリア）
+      const slice = document.createElement('div');
+      slice.className = 'slice';
+      slice.style.transform = `rotate(${angle}deg)`;
 
-    const txt = document.createElement('div');
-    txt.className = 'slice';
-    txt.textContent = i;
-    txt.style.left = `${x}px`;
-    txt.style.top = `${y}px`;
-    txt.addEventListener('click', () => {
-      centerBtn.textContent = i;
-      donut.classList.remove('active');
+      // テキストだけ別の小要素で中央寄せ
+      const txt = document.createElement('div');
+      txt.className = 'slice-text';
+      txt.textContent = (i + 1);
+      slice.appendChild(txt);
+
+      slice.addEventListener('click', () => {
+        centerBtn.textContent = i + 1;
+        donut.classList.remove('active');
+      });
+
+      donut.appendChild(slice);
+
+      // 区切り線（30度ごと）
+      const line = document.createElement('div');
+      line.className = 'sector-line';
+      line.style.transform = `rotate(${angle}deg)`;
+      donut.appendChild(line);
+    }
+
+    centerBtn.addEventListener('click', () => {
+      donut.classList.toggle('active');
     });
-    donut.appendChild(txt);
-  }
-
-  // 区切り線
-  for (let i = 0; i < 12; i++) {
-    const line = document.createElement('div');
-    line.className = 'sector-line';
-    line.style.transform = `rotate(${i * 30}deg) translate(-1px, -150px)`;
-    donut.appendChild(line);
-  }
-
-  centerBtn.addEventListener('click', () => {
-    donut.classList.toggle('active');
-  });
-</script>
-
+  </script>
 </body>
 </html>
