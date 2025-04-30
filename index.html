@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ポップオーバーで数値選択</title>
+  <style>
+    #main-button {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      font-size: 20px;
+    }
+
+    .popover {
+      position: absolute;
+      top: -100px;
+      left: -100px;
+      width: 200px;
+      height: 200px;
+      display: none;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .popover.show {
+      display: block;
+      pointer-events: auto;
+    }
+
+    .popover button {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <button id="main-button">0</button>
+  <div class="popover" id="popover"></div>
+
+  <script>
+    const mainButton = document.getElementById('main-button');
+    const popover = document.getElementById('popover');
+
+    // 数字ボタンを円状に配置
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i - 1) * (360 / 12);
+      const x = 80 * Math.cos((angle - 90) * Math.PI / 180);
+      const y = 80 * Math.sin((angle - 90) * Math.PI / 180);
+      const btn = document.createElement('button');
+      btn.textContent = i;
+      btn.style.left = `${100 + x}px`;
+      btn.style.top = `${100 + y}px`;
+      btn.addEventListener('click', () => {
+        mainButton.textContent = i;
+        popover.classList.remove('show');
+      });
+      popover.appendChild(btn);
+    }
+
+    // メインボタンを押すとポップオーバー表示
+    mainButton.addEventListener('click', () => {
+      popover.classList.toggle('show');
+    });
+
+    // メインボタンの周囲にポップオーバーを表示
+    mainButton.style.position = 'relative';
+    popover.style.position = 'absolute';
+    popover.style.top = '0';
+    popover.style.left = '0';
+  </script>
+</body>
+</html>
