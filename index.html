@@ -1,76 +1,121 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ポップオーバーで数値選択</title>
+  <meta charset="UTF-8" />
+  <title>数値選択ポップオーバー</title>
   <style>
-    #main-button {
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+    }
+
+    .selector {
       position: relative;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      font-size: 20px;
+      width: 300px;
+      height: 300px;
     }
 
-    .popover {
+    .center-button {
       position: absolute;
-      top: -100px;
-      left: -100px;
-      width: 200px;
-      height: 200px;
-      display: none;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
       border-radius: 50%;
-      pointer-events: none;
+      background: white;
+      border: 2px solid #888;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 2;
     }
 
-    .popover.show {
-      display: block;
-      pointer-events: auto;
+    .donut {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
     }
 
-    .popover button {
+    .donut.active {
+      display: flex;
+    }
+
+    .donut .slice {
       position: absolute;
       width: 40px;
       height: 40px;
+      background: #fff;
+      border: 1px solid #ccc;
       border-radius: 50%;
       text-align: center;
+      line-height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .donut .sector-line {
+      position: absolute;
+      width: 2px;
+      height: 150px;
+      background: #ccc;
+      top: 0;
+      left: 50%;
+      transform-origin: bottom center;
     }
   </style>
 </head>
 <body>
-  <button id="main-button">0</button>
-  <div class="popover" id="popover"></div>
 
-  <script>
-    const mainButton = document.getElementById('main-button');
-    const popover = document.getElementById('popover');
+<div class="selector">
+  <button class="center-button">0</button>
+  <div class="donut" id="donut">
+    <!-- 数値とセクターを生成する -->
+  </div>
+</div>
 
-    // 数字ボタンを円状に配置
-    for (let i = 1; i <= 12; i++) {
-      const angle = (i - 1) * (360 / 12);
-      const x = 80 * Math.cos((angle - 90) * Math.PI / 180);
-      const y = 80 * Math.sin((angle - 90) * Math.PI / 180);
-      const btn = document.createElement('button');
-      btn.textContent = i;
-      btn.style.left = `${100 + x}px`;
-      btn.style.top = `${100 + y}px`;
-      btn.addEventListener('click', () => {
-        mainButton.textContent = i;
-        popover.classList.remove('show');
-      });
-      popover.appendChild(btn);
-    }
+<script>
+  const centerBtn = document.querySelector('.center-button');
+  const donut = document.getElementById('donut');
 
-    // メインボタンを押すとポップオーバー表示
-    mainButton.addEventListener('click', () => {
-      popover.classList.toggle('show');
+  // 数字の配置
+  for (let i = 1; i <= 12; i++) {
+    const angle = (i - 3) * 30; // 12時位置を上にする
+    const rad = angle * Math.PI / 180;
+    const x = 120 * Math.cos(rad) + 150 - 20;
+    const y = 120 * Math.sin(rad) + 150 - 20;
+
+    const btn = document.createElement('div');
+    btn.className = 'slice';
+    btn.textContent = i;
+    btn.style.left = `${x}px`;
+    btn.style.top = `${y}px`;
+    btn.addEventListener('click', () => {
+      centerBtn.textContent = i;
+      donut.classList.remove('active');
     });
+    donut.appendChild(btn);
+  }
 
-    // メインボタンの周囲にポップオーバーを表示
-    mainButton.style.position = 'relative';
-    popover.style.position = 'absolute';
-    popover.style.top = '0';
-    popover.style.left = '0';
-  </script>
+  // セクターライン追加（12本）
+  for (let i = 0; i < 12; i++) {
+    const line = document.createElement('div');
+    line.className = 'sector-line';
+    line.style.transform = `rotate(${i * 30}deg)`;
+    donut.appendChild(line);
+  }
+
+  centerBtn.addEventListener('click', () => {
+    donut.classList.toggle('active');
+  });
+</script>
+
 </body>
 </html>
