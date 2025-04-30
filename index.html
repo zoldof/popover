@@ -39,26 +39,34 @@
       height: 100%;
       border-radius: 50%;
       display: none;
-      justify-content: center;
-      align-items: center;
       z-index: 1;
+      animation: popIn 0.3s ease-out;
     }
 
     .donut.active {
-      display: flex;
+      display: block;
+    }
+
+    /* 薄いドーナツ背景（円環） */
+    .donut::before {
+      content: '';
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      border: 20px solid rgba(200, 200, 200, 0.2);
+      box-sizing: border-box;
     }
 
     .donut .slice {
       position: absolute;
-      width: 40px;
-      height: 40px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 50%;
-      text-align: center;
-      line-height: 40px;
-      font-size: 14px;
+      font-size: 16px;
+      font-weight: bold;
       cursor: pointer;
+      transform: translate(-50%, -50%);
     }
 
     .donut .sector-line {
@@ -66,9 +74,20 @@
       width: 2px;
       height: 150px;
       background: #ccc;
-      top: 0;
+      top: 50%;
       left: 50%;
       transform-origin: bottom center;
+    }
+
+    @keyframes popIn {
+      0% {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
     }
   </style>
 </head>
@@ -76,9 +95,7 @@
 
 <div class="selector">
   <button class="center-button">0</button>
-  <div class="donut" id="donut">
-    <!-- 数値とセクターを生成する -->
-  </div>
+  <div class="donut" id="donut"></div>
 </div>
 
 <script>
@@ -87,28 +104,28 @@
 
   // 数字の配置
   for (let i = 1; i <= 12; i++) {
-    const angle = (i - 3) * 30; // 12時位置を上にする
+    const angle = (i - 3) * 30;
     const rad = angle * Math.PI / 180;
-    const x = 120 * Math.cos(rad) + 150 - 20;
-    const y = 120 * Math.sin(rad) + 150 - 20;
+    const x = 120 * Math.cos(rad) + 150;
+    const y = 120 * Math.sin(rad) + 150;
 
-    const btn = document.createElement('div');
-    btn.className = 'slice';
-    btn.textContent = i;
-    btn.style.left = `${x}px`;
-    btn.style.top = `${y}px`;
-    btn.addEventListener('click', () => {
+    const txt = document.createElement('div');
+    txt.className = 'slice';
+    txt.textContent = i;
+    txt.style.left = `${x}px`;
+    txt.style.top = `${y}px`;
+    txt.addEventListener('click', () => {
       centerBtn.textContent = i;
       donut.classList.remove('active');
     });
-    donut.appendChild(btn);
+    donut.appendChild(txt);
   }
 
-  // セクターライン追加（12本）
+  // 区切り線
   for (let i = 0; i < 12; i++) {
     const line = document.createElement('div');
     line.className = 'sector-line';
-    line.style.transform = `rotate(${i * 30}deg)`;
+    line.style.transform = `rotate(${i * 30}deg) translate(-1px, -150px)`;
     donut.appendChild(line);
   }
 
