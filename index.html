@@ -1,150 +1,107 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>ドーナツ数値セレクター</title>
+  <meta charset="UTF-8" />
   <style>
     body {
-      margin: 0;
-      background: #f5f5f5;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      background: #f0f0f0;
     }
 
-    .selector {
+    .circle-menu {
       position: relative;
       width: 300px;
       height: 300px;
+      border-radius: 50%;
+      background: transparent;
+      pointer-events: none;
+      transform: scale(0);
+      transition: transform 0.3s ease;
+    }
+
+    .circle-menu.active {
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    .circle-button {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background-color: #ffffff;
+      border: 2px solid #ccc;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-weight: bold;
     }
 
     .center-button {
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%);
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      border: 2px solid #888;
-      background: white;
-      font-size: 24px;
-      z-index: 2;
-      cursor: pointer;
-    }
-
-    .donut {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      top: 0;
-      left: 0;
-      border-radius: 50%;
-      display: none;
-      z-index: 1;
-      animation: popIn 0.3s ease-out;
-    }
-
-    .donut.active {
-      display: block;
-    }
-
-    /* ドーナツの背景円環 */
-    .donut::before {
-      content: '';
-      position: absolute;
-      width: 220px;
-      height: 220px;
-      top: 50%;
-      left: 50%;
+      background-color: #fff;
+      border: 2px solid #666;
       transform: translate(-50%, -50%);
-      border-radius: 50%;
-      border: 20px solid rgba(200, 200, 200, 0.2);
-    }
-
-    .slice {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 120px;
-      height: 120px;
-      transform-origin: 0 60px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
       cursor: pointer;
+      z-index: 10;
     }
 
-    .slice-text {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      font-weight: bold;
-      font-size: 14px;
-    }
-
-    .sector-line {
+    .line {
       position: absolute;
       width: 2px;
-      height: 110px;
-      background: #ccc;
-      top: 50%;
+      height: 150px;
+      background: #999;
+      top: 0;
       left: 50%;
       transform-origin: bottom center;
-    }
-
-    @keyframes popIn {
-      from {
-        opacity: 0;
-        transform: scale(0.8);
-      }
-      to {
-        opacity: 1;
-        transform: scale(1);
-      }
     }
   </style>
 </head>
 <body>
-  <div class="selector">
-    <button class="center-button">0</button>
-    <div class="donut" id="donut"></div>
-  </div>
+  <div class="circle-menu" id="circleMenu"></div>
+  <div class="center-button" id="centerButton">0</div>
 
   <script>
-    const centerBtn = document.querySelector('.center-button');
-    const donut = document.getElementById('donut');
+    const centerBtn = document.getElementById("centerButton");
+    const menu = document.getElementById("circleMenu");
 
-    for (let i = 0; i < 12; i++) {
-      const angle = i * 30;
-      const rad = angle * Math.PI / 180;
-
-      // 各 slice（扇形クリックエリア）
-      const slice = document.createElement('div');
-      slice.className = 'slice';
-      slice.style.transform = `rotate(${angle}deg)`;
-
-      // テキストだけ別の小要素で中央寄せ
-      const txt = document.createElement('div');
-      txt.className = 'slice-text';
-      txt.textContent = (i + 1);
-      slice.appendChild(txt);
-
-      slice.addEventListener('click', () => {
-        centerBtn.textContent = i + 1;
-        donut.classList.remove('active');
-      });
-
-      donut.appendChild(slice);
-
-      // 区切り線（30度ごと）
-      const line = document.createElement('div');
-      line.className = 'sector-line';
-      line.style.transform = `rotate(${angle}deg)`;
-      donut.appendChild(line);
-    }
-
-    centerBtn.addEventListener('click', () => {
-      donut.classList.toggle('active');
+    centerBtn.addEventListener("click", () => {
+      menu.classList.toggle("active");
     });
+
+    const radius = 120;
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i - 1) * (360 / 12);
+      const btn = document.createElement("div");
+      btn.className = "circle-button";
+      btn.innerText = i;
+      btn.style.left = `${150 + radius * Math.cos((angle - 90) * Math.PI / 180) - 30}px`;
+      btn.style.top = `${150 + radius * Math.sin((angle - 90) * Math.PI / 180) - 30}px`;
+      btn.addEventListener("click", () => {
+        centerBtn.innerText = i;
+        menu.classList.remove("active");
+      });
+      menu.appendChild(btn);
+
+      // 区切り線も描画
+      const line = document.createElement("div");
+      line.className = "line";
+      line.style.transform = `rotate(${angle}deg)`;
+      menu.appendChild(line);
+    }
   </script>
 </body>
 </html>
