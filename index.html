@@ -1,82 +1,75 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<style>
-  body {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: #eee;
-  }
+  <meta charset="UTF-8">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f0f0f0;
+    }
 
-  .wrapper {
-    position: relative;
-    width: 300px;
-    height: 300px;
-  }
+    .wrapper {
+      position: relative;
+      width: 300px;
+      height: 300px;
+    }
 
-  .circle-menu {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    pointer-events: none;
-    transform: scale(0);
-    transition: transform 0.3s ease;
-  }
+    .circle-menu {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: scale(0);
+      transition: transform 0.3s ease;
+    }
 
-  .circle-menu.active {
-    transform: scale(1);
-    pointer-events: auto;
-  }
+    .circle-menu.active {
+      transform: scale(1);
+      pointer-events: auto;
+    }
 
-  .circle-button {
-    position: absolute;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #fff;
-    border: 2px solid #666;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 18px;
-    cursor: pointer;
-    user-select: none;
-  }
+    .center-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2px solid #333;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 22px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10;
+    }
 
-  .center-button {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    background: #fff;
-    border: 2px solid #333;
-    transform: translate(-50%, -50%);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 22px;
-    font-weight: bold;
-    cursor: pointer;
-    z-index: 10;
-  }
+    .line {
+      position: absolute;
+      width: 2px;
+      height: 150px;
+      background: #aaa;
+      top: 20px; /* 内側から線を引く */
+      left: 50%;
+      transform-origin: bottom center;
+    }
 
-  .line {
-    position: absolute;
-    width: 2px;
-    height: 130px;
-    background: #aaa;
-    top: 20px; /* 内側から線を引く */
-    left: 50%;
-    transform-origin: bottom center;
-  }
-</style>
+    .sector {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      clip-path: polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 0);
+      cursor: pointer;
+      pointer-events: all;
+    }
+  </style>
 </head>
 <body>
 
@@ -105,26 +98,25 @@
     const x = centerX + radius * Math.cos(angleRad) - 25; // ボタンサイズ50の中心
     const y = centerY + radius * Math.sin(angleRad) - 25;
 
-    const btn = document.createElement("div");
-    btn.className = "circle-button";
-    btn.innerText = i;
-    btn.style.left = `${x}px`;
-    btn.style.top = `${y}px`;
-    btn.title = `${i}を選択`; // ヒント属性
-
-    btn.addEventListener("click", (e) => {
-      e.stopPropagation(); // 中央ボタンのイベントキャンセル
-      centerBtn.innerText = i;
-      menu.classList.remove("active");
-    });
-
-    menu.appendChild(btn);
-
-    // 線を引く
+    // 区切り線を追加
     const line = document.createElement("div");
     line.className = "line";
     line.style.transform = `rotate(${angleDeg}deg)`;
     menu.appendChild(line);
+
+    // セクター作成
+    const sector = document.createElement("div");
+    sector.className = "sector";
+    sector.style.transform = `rotate(${angleDeg}deg)`;
+    sector.style.clipPath = `polygon(50% 50%, 100% 0, 100% 100%, 0 100%, 0 0)`;
+
+    // セクターを押すと中央ボタンの番号を変更
+    sector.addEventListener("click", () => {
+      centerBtn.innerText = i;
+      menu.classList.remove("active");
+    });
+
+    menu.appendChild(sector);
   }
 </script>
 
