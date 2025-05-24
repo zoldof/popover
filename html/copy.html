@@ -36,7 +36,7 @@
 
       const user = m[1];
       const gistId = m[2];
-      const rawUrl = `https://gist.githubusercontent.com/${user}/${gistId}/raw/${fileName}`;
+      const rawUrl = `https://gist.github.com/${user}/${gistId}/raw/${fileName}`;
 
       try {
         const text = await fetch(rawUrl).then(res => res.text());
