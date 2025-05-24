@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>コードコピー</title>
+  <style>
+    .copy-popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      opacity: 0;
+      z-index: 9999;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+    }
+    .copy-popup.show {
+      opacity: 0.9;
+    }
+  </style>
+  <script>
+    async function copyFromGist() {
+      const params = new URLSearchParams(location.search);
+      const gistUrl = params.get("gist");
+      const fileName = params.get("file");
+
+      if (!gistUrl || !fileName) return;
+
+      const m = gistUrl.match(/gist\.github\.com\/([^\/]+)\/([a-f0-9]+)/i);
+      if (!m) return;
+
+      const user = m[1];
+      const gistId = m[2];
+      const rawUrl = `https://gist.githubusercontent.com/${user}/${gistId}/raw/${fileName}`;
+
+      try {
+        const text = await fetch(rawUrl).then(res => res.text());
+        await navigator.clipboard.writeText(text);
+
+        // カーソル変更（PC用）
+        document.body.style.cursor = "copy";
+        setTimeout(() => {
+          document.body.style.cursor = "default";
+        }, 800);
+
+        // ポップアップ表示（全デバイス対応）
+        const popup = document.createElement("div");
+        popup.className = "copy-popup";
+        popup.textContent = "コピー完了！";
+        document.body.appendChild(popup);
+
+        // 表示
+        requestAnimationFrame(() => {
+          popup.classList.add("show");
+        });
+
+        // 消去
+        setTimeout(() => {
+          popup.classList.remove("show");
+          setTimeout(() => popup.remove(), 400);
+        }, 1200);
+
+      } catch (e) {
+        console.error("コピー失敗:", e);
+      }
+    }
+
+    window.onload = copyFromGist;
+  </script>
+</head>
+<body></body>
+</html>
